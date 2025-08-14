@@ -1,0 +1,187 @@
+{
+    "variable": {
+        "postgresql_server_name": [
+            {
+                "type": "string",
+                "description": "The name of the postgresql server.",
+                "nullable": false
+            }
+        ],
+        "administrator_login": [
+            {
+                "type": "string",
+                "description": "The username for the postgresql server.",
+                "nullable": false
+            }
+        ],
+        "administrator_login_password": [
+            {
+                "type": "string",
+                "description": "The password for the postgresql server.",
+                "nullable": false,
+                "sensitive": true
+            }
+        ],
+        "backup_retention_days": [
+            {
+                "type": "number",
+                "description": "The number of days backups are retained.",
+                "nullable": false,
+                "default": 7
+            }
+        ],
+        "sku_name": [
+            {
+                "type": "string",
+                "description": "The name of the SKU.",
+                "nullable": false,
+                "default": "GP_Gen5_4"
+            }
+        ],
+        "postgresql_version": [
+            {
+                "type": "string",
+                "description": "The version of the postgresql server.",
+                "nullable": false,
+                "default": "11"
+            }
+        ],
+        "storage_mb": [
+            {
+                "type": "number",
+                "description": "The storage capacity of the postgresql server.",
+                "nullable": false,
+                "default": 640000
+            }
+        ],
+        "geo_redundant_backup_enabled": [
+            {
+                "type": "bool",
+                "description": "Enable Geo-redundant or not.",
+                "nullable": true,
+                "default": true
+            }
+        ],
+        "auto_grow_enabled": [
+            {
+                "type": "bool",
+                "description": "Enable auto grow or not.",
+                "nullable": true,
+                "default": true
+            }
+        ],
+        "public_network_access_enabled": [
+            {
+                "type": "bool",
+                "description": "Enable public network access or not.",
+                "nullable": true,
+                "default": false
+            }
+        ],
+        "ssl_enforcement_enabled": [
+            {
+                "type": "bool",
+                "description": "Enable SSL enforcement or not.",
+                "nullable": true,
+                "default": true
+            }
+        ],
+        "ssl_minimal_tls_version_enforced": [
+            {
+                "type": "string",
+                "description": "The minimal TLS version enforced.ssl_minimal_tls_version_enforced must be set to TLSEnforcementDisabled when ssl_enforcement_enabled is set to false",
+                "nullable": true,
+                "default": "TLS1_2"
+            }
+        ],
+        "postgresql_database_name": [
+            {
+                "type": "string",
+                "description": "The name of the postgresql database.",
+                "nullable": false
+            }
+        ],
+        "charset": [
+            {
+                "type": "string",
+                "description": "The charset for the postgresql database.",
+                "nullable": false,
+                "default": "UTF8"
+            }
+        ],
+        "collation": [
+            {
+                "type": "string",
+                "description": "The collation for the postgresql database.",
+                "nullable": false,
+                "default": "English_United States.1252"
+            }
+        ],
+        "tags": [
+            {
+                "type": "map(string)",
+                "description": "A mapping of tags to assign to the resource.",
+                "nullable": true,
+                "default": {}
+            }
+        ],
+        "enable_threat_detection":[
+            {
+                "type": "bool",
+                "description": "Enable threat detection or not.",
+                "nullable": true,
+                "default": false
+            }
+        ],
+        "email_addresses":[
+            {
+                "type": "list(string)",
+                "description": "A list of email addresses to send security alerts.",
+                "nullable": true
+            }
+        ],
+        "subnet_ids":[
+            {
+                "type": "list(string)",
+                "description": "A list of subnet ids to associate with the postgresql server.",
+                "nullable": true
+            }
+        ],
+        "postgresql_configuration":[
+            {
+                "type": "map(string)",
+                "description": "A mapping of postgresql configuration options.",
+                "nullable": true
+            }
+        ],
+        "enable_active_directory_administrator":[
+            {
+                "type": "bool",
+                "description": "Enable active directory administrator or not.",
+                "nullable": true,
+                "default": false
+            }
+        ],
+        "ad_admin_login_name":[
+            {
+                "type": "string",
+                "description": "The login name of the active directory administrator.",
+                "nullable": true
+            }
+        ],
+        "ad_admin_object_id":[
+            {
+                "type": "string",
+                "description": "The object id of the active directory administrator.",
+                "nullable": true
+            }
+        ],
+        "ad_admin_tenant_id":[
+            {
+                "type": "string",
+                "description": "The tenant id of the active directory administrator.",
+                "nullable": true
+            }
+        ]
+    }
+}

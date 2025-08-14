@@ -1,0 +1,58 @@
+helm_hpa_5c68b57700f554e7b50b3647c6652c1d:
+    enabled: true
+    max_replicas: 2
+    min_replicas: 1
+    name: spring-petclinic
+    target_cpu_utilization_percentage: 50
+    target_memory_utilization_percentage: 50
+    workload_kind: Deployment
+    workload_name: spring-petclinic
+helm_ingress_d3685dc97cd454d1a569ac349b2690d5:
+    annotations:
+        kubernetes.io/ingress.allow-http: "false"
+    class_name: spring-petclinic-azure
+    default_backend_name: spring-petclinic
+    default_backend_port: 80
+    enabled: true
+    labels:
+        service: spring-petclinic
+    rules: []
+    tls: ""
+helm_service_37cdd65a28505254a68de58cdcc6303b:
+    name: spring-petclinic
+    port: 80
+    protocol: TCP
+    selector_labels:
+        app: spring-petclinic
+    target_port: 8080
+    type: ClusterIP
+helm_service_account_6c2de3b51e325bc98a35fccf44ac3ee8:
+    annotations: {}
+    automount: false
+    labels: {}
+    name: spring-petclinic-sa
+helm_workload_c0d3ce0f09a052448dab08dcc977ed34:
+    env:
+        MYSQL_PASS: petclinic
+        MYSQL_URL: localhost/petclinic
+        MYSQL_USER: petclinic
+        POSTGRES_PASS: petclinic
+        POSTGRES_URL: localhost/petclinic
+        POSTGRES_USER: petclinic
+        database: petclinic
+    env_from_config: []
+    env_from_secret: []
+    image: /
+    image_pull_policy: Always
+    image_pull_secret: null
+    image_tag: petclinic-3.2.0
+    kind: Deployment
+    labels:
+        app: spring-petclinic
+    name: spring-petclinic
+    port: 8080
+    protocol: TCP
+    replicas: 1
+    service_account: spring-petclinic-sa
+    volume_mounts: []
+    volumes: []

@@ -1,0 +1,113 @@
+---
+# Source: petclinic-aks-v01/templates/helm_service_account_6c2de3b51e325bc98a35fccf44ac3ee8.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: spring-petclinic-sa
+  labels:
+  annotations:
+automountServiceAccountToken: false
+---
+# Source: petclinic-aks-v01/templates/helm_service_37cdd65a28505254a68de58cdcc6303b.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-petclinic
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+        app: spring-petclinic
+---
+# Source: petclinic-aks-v01/templates/helm_workload_c0d3ce0f09a052448dab08dcc977ed34.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-petclinic
+  labels:
+        app: spring-petclinic
+  annotations:
+spec:
+  replicas: 1
+  
+  selector:
+    matchLabels:
+        app: spring-petclinic
+  template:
+    metadata:
+      labels:
+        app: spring-petclinic
+    spec:
+      serviceAccountName: spring-petclinic-sa
+      volumes:
+      containers:
+        - name: petclinic-aks-v01
+          image: "/:petclinic-3.2.0"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+          volumeMounts:
+          env:
+            - name: MYSQL_PASS
+              value: "petclinic"
+            - name: MYSQL_URL
+              value: "localhost/petclinic"
+            - name: MYSQL_USER
+              value: "petclinic"
+            - name: POSTGRES_PASS
+              value: "petclinic"
+            - name: POSTGRES_URL
+              value: "localhost/petclinic"
+            - name: POSTGRES_USER
+              value: "petclinic"
+            - name: database
+              value: "petclinic"
+---
+# Source: petclinic-aks-v01/templates/helm_hpa_5c68b57700f554e7b50b3647c6652c1d.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-petclinic
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-petclinic
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 50
+---
+# Source: petclinic-aks-v01/templates/helm_ingress_d3685dc97cd454d1a569ac349b2690d5.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: petclinic-aks-v01
+  labels:
+        service: spring-petclinic
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  defaultBackend:
+    service:
+      name: spring-petclinic
+      port:
+        number: 80
+  ingressClassName: spring-petclinic-azure

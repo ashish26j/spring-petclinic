@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+
+@ConditionalOnProperty(name = "app.run.platform", havingValue = "azure")
 /**
  * Perform some initializing of the supported pet types on startup by downloading them
  * from S3, if enabled

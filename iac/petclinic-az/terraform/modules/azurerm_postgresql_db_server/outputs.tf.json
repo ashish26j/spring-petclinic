@@ -1,0 +1,14 @@
+{
+  "output": {
+    "postgresql_database_id": {
+      "description": "The value of the postgresql_database_id output",
+      "sensitive": false,
+      "value": "${azurerm_postgresql_database.example.id}"
+    },
+    "postgresql_server_id": {
+      "description": "The value of the postgresql_server_id output",
+      "sensitive": false,
+      "value": "${azurerm_postgresql_server.this.id}"
+    }
+  }
+}

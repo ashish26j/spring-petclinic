@@ -1,0 +1,19 @@
+{
+  "output": {
+    "id": {
+      "description": "The value of the id output",
+      "sensitive": false,
+      "value": "${azurerm_redis_cache.this.id}"
+    },
+    "name": {
+      "description": "The value of the name output",
+      "sensitive": false,
+      "value": "${azurerm_redis_cache.this.name}"
+    },
+    "redis_firewall_rule_id": {
+      "description": "The value of the redis_firewall_rule_id output",
+      "sensitive": false,
+      "value": "${azurerm_redis_firewall_rule.this.id}"
+    }
+  }
+}

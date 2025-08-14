@@ -1,0 +1,14 @@
+{
+  "output": {
+    "id": {
+      "description": "The unique identifier of the storage container.",
+      "sensitive": false,
+      "value": "${azurerm_storage_container.this.id}"
+    },
+    "resource_manager_id": {
+      "description": "The Resource Manager ID of the storage container.",
+      "sensitive": false,
+      "value": "${azurerm_storage_container.this.resource_manager_id}"
+    }
+  }
+}

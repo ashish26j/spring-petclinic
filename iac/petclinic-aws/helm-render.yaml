@@ -1,0 +1,183 @@
+---
+# Source: petclinic-aks-aws-v02/templates/helm_service_account_64d74715c0c052dea334319fe28e29af.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-petclinic
+  labels:
+  annotations:
+automountServiceAccountToken: false
+---
+# Source: petclinic-aks-aws-v02/templates/helm_service_3e8360d64d54565fa79cffc070406be1.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-petclinic
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+        app: spring-petclinic
+        service: spring-petclinic
+---
+# Source: petclinic-aks-aws-v02/templates/helm_workload_68a4e8b8568c516bae1bb084e13f5124.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-petclinic
+  labels:
+        app: spring-petclinic
+        service: spring-petclinic
+  annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/spring-petclinic-aws-irsa-pod-role
+spec:
+  replicas: 1
+  
+  selector:
+    matchLabels:
+        app: spring-petclinic
+        service: spring-petclinic
+  template:
+    metadata:
+      labels:
+        app: spring-petclinic
+        service: spring-petclinic
+    spec:
+      serviceAccountName: sa-petclinic
+      volumes:
+        - name: db-secrets
+          secret:
+            secretName: map[secretName:spring-petclinic]
+          
+      containers:
+        - name: petclinic-aks-aws-v02
+          image: "99999999999999.dkr.ecr.us-west-2.amazonaws.com/aksecr:petclinic-3.2.0"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+          envFrom:
+          volumeMounts:
+            - name: db-secrets
+              mountPath: /etc/db-secrets
+              subPath: 
+              readOnly: true
+          env:
+            - name: MYSQL_PASS
+              value: "petclinic"
+            - name: MYSQL_URL
+              value: "localhost/petclinic"
+            - name: MYSQL_USER
+              value: "petclinic"
+            - name: POSTGRES_PASS
+              value: "petclinic"
+            - name: POSTGRES_URL
+              value: "localhost/petclinic"
+            - name: POSTGRES_USER
+              value: "petclinic"
+            - name: REDIS_ENDPOINT
+              value: 
+            - name: REDIS_HOST
+              value: "localhost"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PWD
+              value: "redis"
+            - name: REDIS_USER
+              value: "redis"
+            - name: SPRING_AWS_PROFILE
+              value: "dev"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "mysql"
+            - name: database
+              value: "petclinic"
+---
+# Source: petclinic-aks-aws-v02/templates/helm_hpa_8fa88ff4da445cac838da8972bafa77f.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: spring-petclinic
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: spring-petclinic
+  minReplicas: 1
+  maxReplicas: 2
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 50
+---
+# Source: petclinic-aks-aws-v02/templates/helm_ingress_420ef54e34ef5805b1c1c87aa2b5f602.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-petclinic
+  labels:
+        service: spring-petclinic
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  defaultBackend:
+    service:
+      name: spring-petclinic
+      port:
+        number: 80
+  ingressClassName: ingress
+  rules:
+    - host: aks-petclinic.stackgen.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: spring-petclinic
+              port:
+                number: 80
+---
+# Source: petclinic-aks-aws-v02/templates/helm_ingress_alb_9999999999999999999999.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-petclinic
+  labels:
+        app: spring-petclinic
+        service: spring-petclinic
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-Res-2021-06
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/target-type: ip
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:<region>:<account-id>:certificate/<uuid>"
+spec:
+  ingressClassName: "alb"
+  rules:
+    - host: "aks-petclinic.stackgen.com"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: 
+                port:
+                  number: 80

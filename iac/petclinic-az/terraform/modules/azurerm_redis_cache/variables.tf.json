@@ -1,0 +1,93 @@
+{
+  "variable": {
+    "cache_name": [
+      {
+        "description": "The name of the redis cache.The Name used for Redis needs to be globally unique",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "capacity": [
+      {
+        "description": "The size of the redis cache. Valid values for Basic/Standard SKUs are [0,6] and for Premium SKU are [1,5]",
+        "nullable": false,
+        "type": "number"
+      }
+    ],
+    "non_ssl_port_enabled": [
+      {
+        "default": false,
+        "description": "Enable non ssl port",
+        "nullable": true,
+        "type": "bool"
+      }
+    ],
+    "end_ip": [
+      {
+        "description": "The end ip address for the firewall rule.",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "family": [
+      {
+        "default": "C",
+        "description": "The pricing group for redis cache.",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "firewall_rule_name": [
+      {
+        "description": "The name of the redis firewall rule.",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "minimum_tls_version": [
+      {
+        "default": "1.2",
+        "description": "The minimum tls version",
+        "nullable": true,
+        "type": "string"
+      }
+    ],
+    "patch_schedule": [
+      {
+        "description": "The patch schedule",
+        "nullable": true,
+        "type": "list(object({day_of_week:string,start_hour_utc:number,maintenance_window:string}))",
+        "default": [
+          {
+            "day_of_week": "Sunday",
+            "start_hour_utc": 2,
+            "maintenance_window": "PT5H"
+          }
+        ]
+      }
+    ],
+    "public_network_access_enabled": [
+      {
+        "default": false,
+        "description": "Enable public network access",
+        "nullable": true,
+        "type": "bool"
+      }
+    ],
+    "sku_name": [
+      {
+        "default": "Standard",
+        "description": "The sku name of the redis cache",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "start_ip": [
+      {
+        "description": "The start ip address for the firewall rule.",
+        "nullable": false,
+        "type": "string"
+      }
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+    "variable": {
+        "curve": [
+            {
+                "default": "P-256",
+                "description": "Specifies the curve to use when creating an EC key. Possible values are P-256, P-256K, P-384, and P-521. This field will be required in a future release if key_type is EC or EC-HSM. The API will default to P-256 if nothing is specified. Changing this forces a new resource to be created.",
+                "type": "string"
+            }
+        ],
+        "expiration_date": [
+            {
+                "description": "Expiration UTC datetime (Y-m-d'T'H:M:S'Z'). When this parameter gets changed on reruns, if newer date is ahead of current date, an update is performed. If the newer date is before the current date, resource will be force created. NOTE: Once expiration_date is set, it's not possible to unset the key even if it is deleted \u0026 recreated as underlying Azure API uses the restore of the purged key. e.g 2006-01-02T15:04:05Z",
+                "type": "string",
+                "nullable": true
+            }
+        ],
+        "expire_after": [
+            {
+                "description": "The duration after which the key will expire as an ISO 8601 duration (https://en.wikipedia.org/wiki/ISO_8601#Durations). e.g. P1M (1 month), P2Y (2 years)",
+                "type": "string",
+                "nullable": true
+            }
+        ],
+        "key_name": [
+            {
+                "description": "The name of the Key Vault Key.",
+                "type": "string"
+            }
+        ],
+        "key_opts": [
+            {
+                "default": [
+                    "encrypt",
+                    "decrypt",
+                    "sign",
+                    "unwrapKey",
+                    "verify",
+                    "wrapKey"
+                ],
+                "description": "A list of JSON web key operations. Possible values include: decrypt, encrypt, sign, unwrapKey, verify and wrapKey. Please note these values are case sensitive.",
+                "type": "list(string)"
+            }
+        ],
+        "key_size": [
+            {
+                "default": 2048,
+                "description": "Specifies the Size of the RSA key to create in bytes. For example, 1024 or 2048. Note: This field is required if key_type is RSA or RSA-HSM. Changing this forces a new resource to be created.",
+                "type": "number"
+            }
+        ],
+        "key_type": [
+            {
+                "type": "string",
+                "default": "RSA",
+                "description": "Specifies the Key Type to use for this Key Vault Key. Possible values are EC (Elliptic Curve), EC-HSM, RSA and RSA-HSM. Changing this forces a new resource to be created."
+            }
+        ],
+        "key_vault_id": [
+            {
+                "description": "The id of an existing Key Vault. (Drag a Key Vault resource and make connection to deploy this key in the Key Vault.)",
+                "type": "string"
+            }
+        ],
+        "not_before_date": [
+            {
+                "nullable": true,
+                "description": "Key not usable before the provided UTC datetime (Y-m-d'T'H:M:S'Z').",
+                "type": "string"
+                
+            }
+        ],
+        "notify_before_expiry": [
+            {
+                "nullable": true,
+                "description": "Notify at a given duration before expiry as an ISO 8601 duration.",
+                "type": "string"
+            }
+        ],
+        "time_after_creation": [
+            {
+                "nullable": true,
+                "description": "Rotate automatically at a duration after create as an ISO 8601 duration.",
+                "type": "string"
+            }
+        ],
+        "time_before_expiry": [
+            {
+                "nullable": true,
+                "description": "Rotate automatically at a duration before expiry as an ISO 8601 duration.",
+                "type": "string"
+            }
+        ]
+}
+}

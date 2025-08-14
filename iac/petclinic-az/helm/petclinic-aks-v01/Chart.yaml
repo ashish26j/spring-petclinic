@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: Generated helm chart created for service "petclinic-aks-v01" with stackgen
+name: petclinic-aks-v01
+type: application
+version: 0.1.0

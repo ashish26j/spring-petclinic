@@ -1,0 +1,132 @@
+helm_hpa_8fa88ff4da445cac838da8972bafa77f:
+    enabled: true
+    max_replicas: 2
+    min_replicas: 1
+    name: spring-petclinic
+    target_cpu_utilization_percentage: 50
+    target_memory_utilization_percentage: 50
+    workload_kind: Deployment
+    workload_name: spring-petclinic
+helm_ingress_420ef54e34ef5805b1c1c87aa2b5f602:
+    annotations:
+        kubernetes.io/ingress.allow-http: "false"
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    class_name: ingress
+    default_backend_name: spring-petclinic
+    default_backend_port: 80
+    enabled: true
+    labels:
+        service: spring-petclinic
+    name: spring-petclinic
+    rules: 
+    - host: aks-petclinic.stackgen.com     # <-- same host as above
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spring-petclinic
+                port:
+                  number: 80
+    tls: ""
+helm_ingress_alb_9999999999999999999:
+  enabled: true
+  className: alb
+  name: spring-petclinic
+
+  # --- ALB annotations (sane defaults) ---
+  annotations:
+    kubernetes.io/ingress.class: alb
+    # Create both 80/443 listeners
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    # Force HTTPS
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # Pod IP targets (recommended for EKS)
+    alb.ingress.kubernetes.io/target-type: ip
+    # Public or private ALB
+    alb.ingress.kubernetes.io/scheme: internet-facing        # change to "internal" if needed
+    # Strong TLS policy (TLS 1.3/1.2)
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-Res-2021-06
+
+    # Optional hardening / tuning:
+    # Restrict who can reach the ALB
+    # alb.ingress.kubernetes.io/inbound-cidrs: "203.0.113.0/24,198.51.100.0/24"
+    # Attach AWS WAFv2 web ACL
+    # alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:<region>:<account-id>:regional/webacl/<name>/<uuid>"
+    # Useful LB attributes (examples)
+    # alb.ingress.kubernetes.io/load-balancer-attributes: "deletion_protection.enabled=true,routing.http2.enabled=true,idle_timeout.timeout_seconds=60"
+
+  # --- TLS certificate (ACM) ---
+  certificateArn: "arn:aws:acm:<region>:<account-id>:certificate/<uuid>"
+
+  # --- Routing rules (host + paths) ---
+  hosts:
+    - host: "aks-petclinic.stackgen.com"     # must match the ACM cert's SAN/CN
+      paths:
+        - path: "/"
+          pathType: Prefix
+
+  # --- Backend service to route to (defaults to chart fullname if name is empty) ---
+  backendService:
+    name: ""                      # leave empty to use release fullname
+    port: 80
+helm_service_3e8360d64d54565fa79cffc070406be1:
+    name: spring-petclinic
+    port: 80
+    protocol: TCP
+    selector_labels:
+        service: spring-petclinic
+        app: spring-petclinic
+    target_port: 8080
+    type: ClusterIP
+helm_service_account_64d74715c0c052dea334319fe28e29af:
+    annotations_enable: true
+    annotations: {}
+    automount: false
+    labels: {}
+    name: sa-petclinic
+helm_workload_68a4e8b8568c516bae1bb084e13f5124:
+    annotations_enable: true
+    annotations: 
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/spring-petclinic-aws-irsa-pod-role
+    env:
+        MYSQL_PASS: petclinic
+        MYSQL_URL: localhost/petclinic
+        MYSQL_USER: petclinic
+        POSTGRES_PASS: petclinic
+        POSTGRES_URL: localhost/petclinic
+        POSTGRES_USER: petclinic
+        SPRING_AWS_PROFILE: dev
+        database: petclinic
+        REDIS_ENDPOINT: 
+        REDIS_USER: redis
+        REDIS_PWD: redis
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        SPRING_PROFILES_ACTIVE: mysql
+        SPRINT_RUN_PLATFORM: aws
+    env_from_config: []
+    env_from_secret: []
+    image: "99999999999999.dkr.ecr.us-west-2.amazonaws.com/aksecr"
+    image_pull_policy: Always
+    image_pull_secret: null
+    image_tag: petclinic-3.2.0
+    kind: Deployment
+    labels:
+        service: spring-petclinic
+        app: spring-petclinic
+    name: spring-petclinic
+    port: 8090
+    protocol: TCP
+    replicas: 1
+    service_account: sa-petclinic
+    volume_mounts:
+        - name: db-secrets
+          readOnly: true
+          mountPath: "/etc/db-secrets"  #but app should use this path for credentials.
+    volumes: 
+        - name: db-secrets
+          secret:
+            secretName: spring-petclinic

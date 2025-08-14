@@ -1,0 +1,46 @@
+{{- /*
+templates/helm_ingress_alb_9999999999999999999999.yaml
+*/ -}}
+{{- if .Values.helm_ingress_alb_9999999999999999999.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.helm_ingress_alb_9999999999999999999.name   }}
+  labels:
+    {{- with .Values.helm_workload_68a4e8b8568c516bae1bb084e13f5124.labels }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.helm_ingress_alb_9999999999999999999.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if .Values.helm_ingress_alb_9999999999999999999.certificateArn }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.helm_ingress_alb_9999999999999999999.certificateArn | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.helm_ingress_alb_9999999999999999999.className | default "alb" | quote }}
+  {{- if and .Values.helm_ingress_alb_9999999999999999999.hosts (gt (len .Values.helm_ingress_alb_9999999999999999999.hosts) 0) }}
+  rules:
+    {{- range $h := .Values.helm_ingress_alb_9999999999999999999.hosts }}
+    - host: {{ $h.host | quote }}
+      http:
+        paths:
+          {{- range $p := $h.paths }}
+          - path: {{ $p.path | quote }}
+            pathType: {{ $p.pathType | default "Prefix" }}
+            backend:
+              service:
+                name: {{ $.Values.helm_ingress_alb_9999999999999999999.backendService.name  }}
+                port:
+                  number: {{ $.Values.helm_ingress_alb_9999999999999999999.backendService.port | default 80 }}
+          {{- end }}
+    {{- end }}
+  {{- else }}
+  # Fallback: no hosts supplied — use default backend
+  defaultBackend:
+    service:
+      name: {{ .Values.helm_ingress_alb_9999999999999999999.backendService.name }}
+      port:
+        number: {{ .Values.helm_ingress_alb_9999999999999999999.backendService.port | default 80 }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,24 @@
+{
+  "output": {
+    "client_id": {
+      "description": "The value of the client_id output",
+      "sensitive": false,
+      "value": "${azurerm_user_assigned_identity.this.client_id}"
+    },
+    "id": {
+      "description": "The value of the id output",
+      "sensitive": false,
+      "value": "${azurerm_user_assigned_identity.this.id}"
+    },
+    "principal_id": {
+      "description": "The value of the principal_id output",
+      "sensitive": false,
+      "value": "${azurerm_user_assigned_identity.this.principal_id}"
+    },
+    "this": {
+      "description": "The value of the this output",
+      "sensitive": false,
+      "value": "${azurerm_user_assigned_identity.this}"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "variable": {
+    "name": [
+      {
+        "description": "The name of the storage container.",
+        "nullable": false,
+        "type": "string"
+      }
+    ],
+    "storage_account_name": [
+      {
+        "description": "The name of the storage account that the container belongs to.",
+        "nullable": false,
+        "type": "string"
+      }
+    ]
+  }
+}

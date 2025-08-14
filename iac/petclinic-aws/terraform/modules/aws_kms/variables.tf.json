@@ -1,0 +1,32 @@
+{
+    "variable": {
+        "alias": [
+            {
+                "description": "The display name of the alias. Prefix 'alias/' will be added automatically)",
+                "type": "string",
+                "nullable": false
+            }
+        ],
+        "description": [
+            {
+                "default": "KMS key",
+                "description": "value of description",
+                "type": "string"
+            }
+        ],
+        "enable_key_rotation": [
+            {
+                "default": true,
+                "description": "Specifies whether key rotation is enabled. Defaults to false.",
+                "type": "bool"
+            }
+        ],
+        "tags": [
+            {
+                "description": "A map of tags to add to the resources",
+                "type": "map(string)",
+                "nullable": true
+            }
+        ]
+    }
+}

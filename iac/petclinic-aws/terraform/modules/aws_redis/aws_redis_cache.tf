@@ -14,8 +14,8 @@ resource "aws_security_group" "redis_sg" {
 # Firewall-style access: allow traffic on 6379 from allowed CIDRs
 resource "aws_security_group_rule" "allow_ingress" {
   type              = "ingress"
-  from_port         = 6379
-  to_port           = 6379
+  from_port         = var.port
+  to_port           = var.port
   protocol          = "tcp"
   security_group_id = aws_security_group.redis_sg.id
   cidr_blocks       = var.allowed_cidrs

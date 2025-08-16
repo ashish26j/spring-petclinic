@@ -1,0 +1,78 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+# This flow is for AWS EKS cluster. Branch based run
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ feature/aks_az_to_aws ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK ${{matrix.java}}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{matrix.java}}
+          distribution: 'adopt'
+          cache: maven
+      - name: Build with Maven Wrapper
+        run: ./mvnw -B package
+      # Configure AWS credentials (from GitHub secrets)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      # Log in to Amazon ECR
+      - name: Login to Amazon ECR
+        uses: docker/login-action@v3
+        with:
+          registry: <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+      # Build and push image with Spring Boot
+      - name: Build Image and Push
+        run:  ./mvnw spring-boot:build-image \
+                -Dspring-boot.build-image.imageName=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/petclinic:${{ github.sha }}
+  
+  deploy:
+  runs-on: ubuntu-latest
+  needs: build  # ensure image is built & pushed first
+
+  steps:
+    - uses: actions/checkout@v4
+
+    # Configure AWS credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1   # change to your region
+
+    # Get kubeconfig for EKS
+    - name: Update kubeconfig for EKS
+      run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region us-east-1
+
+    # Set up Helm (pre-installed on ubuntu-latest, but safe to add)
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.14.0
+
+    # Deploy with Helm (pass image tag)
+    - name: Deploy Petclinic with Helm
+      run: |
+        helm upgrade --install petclinic \
+          ./iac/petclinic-aws/helm/petclinic-aks-aws-v02 \
+          --namespace petclinic \
+          --create-namespace \
+          --set helm_workload_68a4e8b8568c516bae1bb084e13f5124.image_tag=${{ github.sha }}
+

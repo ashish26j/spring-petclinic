@@ -21,10 +21,10 @@ module "stackgen_5f2b1c97-d70f-512c-bc6c-da2415fd249a" { #rds
   rds_auto_pause                    = true
   rds_availability_zones            = ["us-east-1a", "us-east-1b"]
   rds_backup_retention_period       = 9
-  rds_database_name                 = "default"
-  rds_db_subnet_group_name          = "default"
-  rds_engine                        = "postgres"
-  rds_engine_mode                   = "provisioned"
+  rds_database_name                 = "petclinic"
+  rds_db_subnet_group_name          = "petclinic_db"
+  rds_engine                        = "aurora-postgresql"
+  rds_engine_mode                   = "serverless"
   rds_engine_version                = "16.4"
   rds_master_password               = var.rds_master_password_5f2b1c97-d70f-512c-bc6c-da2415fd249a
   rds_master_username               = "admin"
@@ -72,5 +72,34 @@ module "stackgen_d581ad43-1505-5ee1-b23b-8efe2084a229" {  #role will assume by e
   permissions_boundary  = null
   tags                  = null
 }
+
+
+module "petclinic_redis" {
+  source = "./modules/aws_elasticache_redis"
+
+  cache_name   = "spring-petclinic-cache"
+  description  = "Redis for Spring Petclinic"
+
+  engine_version = "7.1"
+  node_type      = "cache.t4g.small"
+
+  num_node_groups         = 1
+  replicas_per_node_group = 1
+
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnet_ids
+
+  # like Azure firewall rule
+  allowed_cidrs = ["10.0.0.0/16"]
+
+  auth_token = var.redis_auth_token
+
+  tags = {
+    Project = "Petclinic"
+    Env     = var.env
+  }
+}
+
+
 
 

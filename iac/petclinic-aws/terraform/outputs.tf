@@ -68,3 +68,21 @@ output "aws_s3_stackgen_6c81c241-d99e-5a45-bce5-d55588c88c15_kms_arn" {
   sensitive = false
 }
 
+
+output "redis_primary_endpoint" {
+  value     = module.petclinic_redis.primary_endpoint
+  sensitive = false
+}
+
+output "redis_reader_endpoint" {
+  value     = module.petclinic_redis.reader_endpoint
+  sensitive = false
+}
+
+output "redis_port" {
+  value     = module.petclinic_redis.port
+  sensitive = false
+}
+
+
+
